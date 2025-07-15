@@ -1,37 +1,110 @@
-import pandas as pd
-import datetime
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
 
-from all_transaction import TransactionBook
+def enter_data():
+    accepted = accept_var.get()
+    
+    if accepted=="Accepted":
+        # User info
+        firstname = first_name_entry.get()
+        lastname = last_name_entry.get()
+        title = title_combobox.get()
+        age = age_spinbox.get()
+        nationality = nationaly_combobox.get()
+        
+        # Course info
+        registration_status = reg_status_var.get()
+        numcourses = numcourses_spinbox.get()
+        numsemesters = numsemesters_spinbox.get()
+        
+        print(f"First name: {firstname} Last name: {lastname}")
+        print(f"Title: {title} Age: {age} Nationality: {nationality}")
+        print("--"*10)
+        print(f"Courses' number: {numcourses} Semesters' number: {numsemesters} Status: {registration_status}")
+    else:
+        messagebox.showwarning(title="Error", message="You have not accepted the terns")
+        
 
-if __name__ == "__main__":
-    
+window = tk.Tk()
+window.title("Data Entry Form")
 
-    transactions_list = pd.read_csv(r"data.csv", sep=";", decimal=",").values.tolist()
-    transaction_to_add = [2001, "1", "10", "11", "58", "01/02/2023", 48919]
-    
-    transaction_book = TransactionBook()
-    
-    # Pour naviguer facilement sur les fonctions, on peut utiliser la ligne de code "transaction_book.run()" et mettre en commentaire toutes les lignes après
-    # transaction_book.load_transactions(transactions_list)
-    # transaction_book.run()
-    
-    # 1. implémenter load_transaction pour charger la liste de transaction dans le TransactionBook
-    transaction_book.load_transactions(transactions_list)
-    # 2. implémenter add_transaction pour ajouter "transaction_to_add" dans le TransactionBook
-    transaction_book.add_transaction(transaction_to_add)
-    # 3. implémenter get_transactions qui affiche l'ensemble des transactions du TransactionBook et le décorateur limit_transaction(n)
-    # qui limite à "n" le nombre de transactions affichées
-    print(transaction_book.get_transactions())
-    # 4. implémenter delete_transaction et update_transaction
-    transaction_book.update_transaction({"country": "FR"}, {"country": "FRA"}) # -> update les transactions FR en FRA
-    transaction_book.delete_transaction({"rating": "F"}) # -> supprime les transactions de rating F
-    # 5. implémenter get_transactions_between_dates pour avoir toutes les transactions entre 2 dates
-    print(transaction_book.get_transactions_between_dates(datetime.date(2023, 1, 1), datetime.date(2023, 12, 1)))
-    # 6. implémenter get_invalid_transaction pour avoir les transactions invalides (mauvais type, valeur vide etc...)
-    print(transaction_book.get_invalid_transactions())
-    # 7. implémenter netting qui permet d'avoir le solde des transactions par contreparties (= à un group_by sur toutes les caractéristiques des transactions sauf sur l'index)
-    print(transaction_book.netting())
-    # 8. faire en sorte que print(transaction_book) retourne la liste des transactions
-    print(transaction_book)
-    # 9. implémenter get_sorted_transactions qui permet de retourner les transactions triées selon les caractéristiques passées en argument
-    print(transaction_book.get_sorted_transactions("country", "rating"))
+frame = tk.Frame(window)
+frame.pack()
+
+user_info_frame = tk.LabelFrame(frame, text="User Information")
+user_info_frame.grid(row=0,column=0,padx=20,pady=20)
+
+first_name_label = tk.Label(user_info_frame, text="First Name")
+first_name_label.grid(row=0, column=0)
+
+last_name_label = tk.Label(user_info_frame, text="last Name")
+last_name_label.grid(row=0, column=1)
+
+first_name_entry = tk.Entry(user_info_frame)
+last_name_entry = tk.Entry(user_info_frame)
+first_name_entry.grid(row=1, column=0)
+last_name_entry.grid(row=1, column=1)
+
+title_label = tk.Label(user_info_frame, text="Title")
+title_combobox = ttk.Combobox(user_info_frame, values=["Mr.", "Ms."])
+title_label.grid(row=0, column=2)
+title_combobox.grid(row=1, column=2)
+
+age_label = tk.Label(user_info_frame, text="Age")
+age_spinbox = tk.Spinbox(user_info_frame, from_=18, to=100)
+age_label.grid(row=2,column=0)
+age_spinbox.grid(row=3,column=0)
+
+nationaly_label = tk.Label(user_info_frame, text="Nationaly")
+nationaly_combobox = ttk.Combobox(user_info_frame, values=["French", "Africa"])
+nationaly_label.grid(row=2, column=1)
+nationaly_combobox.grid(row=3, column=1)
+
+for widget in user_info_frame.winfo_children():
+    widget.grid_configure(padx=10, pady=5)
+
+# Saving Course Info
+courses_frame = tk.LabelFrame(frame, text="")
+courses_frame.grid(row=1, column=0, sticky="news", padx=20, pady=20)
+
+registered_label = tk.Label(courses_frame, text="Registration Status")
+
+reg_status_var = tk.StringVar(value="Not Registered")
+registered_check = tk.Checkbutton(courses_frame, text="Currently Registered",
+                                  variable=reg_status_var,
+                                  onvalue="Registered",
+                                  offvalue="Not registered")
+registered_label.grid(row=0,column=0)
+registered_check.grid(row=1,column=0)
+
+numcourses_label = tk.Label(courses_frame, text="# Completed Courses")
+numcourses_spinbox = tk.Spinbox(courses_frame, from_=0, to='Infinity')
+numcourses_label.grid(row=0,column=1)
+numcourses_spinbox.grid(row=1,column=1)
+
+numsemesters_label = tk.Label(courses_frame, text="# Semesters")
+numsemesters_spinbox = tk.Spinbox(courses_frame, from_=0, to='Infinity')
+numsemesters_label.grid(row=0,column=2)
+numsemesters_spinbox.grid(row=1,column=2)
+
+
+for widget in courses_frame.winfo_children():
+    widget.grid_configure(padx=10, pady=5)
+
+
+# Accept terms
+terms_frame = tk.LabelFrame(frame, text="Terms and Conditions")
+terms_frame.grid(row=2, column=0, sticky="news", padx=20, pady=20)
+
+accept_var = tk.StringVar(value="Not Accepted")
+terms_check = tk.Checkbutton(terms_frame, text="I accept the terms and conditions",
+                             variable=accept_var, onvalue="Accepted", offvalue="Not Accepted")
+terms_check.grid(row=0,column=0)
+
+
+# Button
+button = tk.Button(frame, text="Enter data", command= enter_data)
+button.grid(row=3, column=0, sticky="news", padx=20, pady=20)
+
+window.mainloop()
